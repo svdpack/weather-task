@@ -1,5 +1,17 @@
 <?php
 
+
+use App\Core\ResponseJson;
+
+
+if (!function_exists('response')) {
+    function response(): ResponseJson
+    {
+        return new ResponseJson();
+    }
+}
+
+
 if (!function_exists('dd')) {
     function dd(...$args): void
     {

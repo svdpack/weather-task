@@ -11,7 +11,9 @@ switch ($route) {
             $day = $_GET['day'];
             if (preg_match("/^[0-9]{4}-[0-1][0-2]-[0-3][0-9]$/", $day)) {
                 $Weather = new WeatherService();
-                $Weather->getDailyTemp();
+                $temperatures = $Weather->getDailyTemp();
+
+                response()->success($temperatures);
             } else {
                 throw new Exception("Bad format for day parameter! You need to send day in next format 'Y-m-d'", 422);
             }

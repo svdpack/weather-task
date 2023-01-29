@@ -22,7 +22,7 @@ class WeatherService
 
         $this->db = new DB();
 
-        return TRUE;
+        return true;
     }
 
 
@@ -31,7 +31,6 @@ class WeatherService
 
 
         $ch = curl_init($url);
-
 
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -48,14 +47,13 @@ class WeatherService
         curl_close($ch);
 
 
-
         return $response;
 
     }
 
     function setHourlyTemp()
     {
-        $url =  APPLINK.'q='.CITY.'&units=metric&lang=uk&appid='.APPID; # build API URL
+        $url = APPLINK.'q='.CITY.'&units=metric&lang=uk&appid='.APPID; # build API URL
 
         $responce = $this->curlConnect($url);
 
@@ -63,10 +61,10 @@ class WeatherService
         $obj = json_decode($responce);
 
         $lcQry = "INSERT INTO hourly_temp SET
-                temp  = ". $obj->main->temp . ",
-                dateT = '". gmdate("Y-m-d H:i:s", $obj->dt) ."'";
+                temp  = ".$obj->main->temp.",
+                dateT = '".gmdate("Y-m-d H:i:s", $obj->dt)."'";
 
-        $lnID  = $this->db->Qry($lcQry);
+        $lnID = $this->db->Qry($lcQry);
 
 
     }
@@ -74,16 +72,15 @@ class WeatherService
 
     function getDailyTemp()
     {
-        $day   = $this->db->prepare($_GET['day']);
+        $day = $this->db->prepare($_GET['day']);
         $lcQry = "SELECT temp, dateT FROM hourly_temp WHERE date(dateT)=".$day;
-        $lnID  = $this->db->Qry($lcQry);
+        $lnID = $this->db->Qry($lcQry);
 
         $loData = $this->db->getObject($lnID);
 
-        print(json_encode($loData));
+        return $loData;
 
     }
-
 
 
 }

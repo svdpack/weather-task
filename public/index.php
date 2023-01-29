@@ -11,14 +11,13 @@
 
 use App\Core\App;
 
-require_once __DIR__.'/../bootstrap.php';
-
-$app = new App(); # Application initialization
-
 try {
+    require_once __DIR__.'/../bootstrap.php';
+    $app = new App(); # Application initialization
+
     require_once PATH_CORE.'routers.php';
 } catch (Throwable $ex) {
-    $app->error($ex->getMessage());
+    response()->error($ex->getMessage(), $ex->getCode());
 }
 
 exit();
