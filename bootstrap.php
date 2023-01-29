@@ -6,6 +6,8 @@ if (!defined('PATH_CORE')) {
 
 require_once PATH_CORE.'config/mainConfig.php';
 
+require_once PATH_CORE.'app/helpers.php';
+
 spl_autoload_register(function ($name_class_all) {
     $nameClassArray = explode('\\', $name_class_all);
 
