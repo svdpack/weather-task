@@ -12,18 +12,9 @@ namespace App\Core;
 ********************************************************************************
 */
 
-class App
+class Auth
 {
-    function __construct ()
-    {
-        $this->db = new DB();
-
-        self::checkToken();
-
-        return TRUE;
-    }
-
-    function checkToken()
+    static function checkToken(): bool
     {
         $x_token = null;
         foreach (getallheaders() as $keyHead => $valHead) {
@@ -33,16 +24,6 @@ class App
             }
         }
 
-        if ($x_token !== XTOKEN  ){
-            throw new \Exception('Wrong token used!', 401);
-        }
-    }
-
-
-    function error ($text)
-    {
-        $data['status']  = "ERROR";
-        $data['message'] = $text;
-        print json_encode ($data);
+        return $x_token === XTOKEN;
     }
 }

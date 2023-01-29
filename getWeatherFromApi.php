@@ -9,10 +9,10 @@
 ********************************************************************************
 */
 
-use App\Core\App;
 use App\Services\WeatherService;
 
-$app = new App();
+require_once __DIR__.'/bootstrap.php';
+
 
 $Weather = new WeatherService();
 $Weather->setHourlyTemp();
