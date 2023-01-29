@@ -20,8 +20,8 @@ define("DB_CHARSET","SET NAMES utf8");
 
 
 define("APPLINK","https://api.openweathermap.org/data/2.5/weather?");
-define("APPID","a3f0d48e80a49159140a474607b7524f");
+define("APPID","");
 define("CITY","Kyiv");
-define("XTOKEN","d65f721af07ab4c80f036a52e43d3e25");
+define("XTOKEN","");
 
 
