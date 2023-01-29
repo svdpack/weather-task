@@ -13,8 +13,6 @@ class WeatherSaveCommand
         $service = new OpenWeatherMapApiService();
         $weather = $service->setHourlyTemp();
 
-        dump($weather);
-
         if (!empty($weather)
             && !empty($weather?->dt)
             && !empty($weather?->main?->temp)) {

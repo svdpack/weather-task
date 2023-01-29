@@ -12,80 +12,126 @@ namespace App\Core;
 ********************************************************************************
 */
 
+
+use mysql_xdevapi\Exception;
+use mysqli;
+use mysqli_result;
+
 class DB
 {
 
+    protected static ?DB $instance = null;
 
-    function __construct ()
+    private ?mysqli $connection = null;
+
+
+    private function __construct()
     {
-        global $pnCH;
-        $pnCH = mysqli_connect (DB_HOST, DB_USER, DB_PSWD) or die ("Can't connect to DB");
-
-        mysqli_select_db ($pnCH, DB_NAME) or die ("Can't  select DB");
-        mysqli_query ($pnCH, DB_CHARSET); //Задаємо кодування для бази даних
-        return TRUE;
     }
 
 
-    function Qry ($Qry)
+    private function __clone()
     {
-        global $pnCH;
-        $lnID = mysqli_query ($pnCH, $Qry);
-        if (!$lnID) {
-            echo ("Can't execute query: ".$Qry." || ".mysqli_errno ($pnCH)." : ".mysqli_error ($pnCH)); #only for debug,
-            return FALSE;
-        } else {
+    }
 
+    public function __destruct()
+    {
+        if (null !== $this->connection) {
+            $this->connection?->close();
+            $this->connection = null;
+        }
+    }
+
+    /**
+     * pattern Singleton
+     *
+     * @return static
+     */
+    final public static function init(): static
+    {
+        if (null === static::$instance) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
+
+
+    /**
+     * pattern Lazy Load
+     *
+     * @return mysqli
+     */
+    private function connect(): mysqli
+    {
+        if (null === $this->connection) {
+            $this->connection = new mysqli(DB_HOST, DB_USER, DB_PSWD, DB_NAME,);
+            $this->connection->set_charset(DB_CHARSET);
+
+            if ($this->connection->connect_error) {
+                throw new Exception($this->connection->connect_error);
+            }
+        }
+
+        return $this->connection;
+    }
+
+
+    public function Qry($Qry): bool|mysqli_result
+    {
+        $pnCH = $this->connect();
+        $lnID = mysqli_query($pnCH, $Qry);
+        if (!$lnID) {
+            if (isDebug()) {
+                throw new Exception("Can't execute query: ".$Qry." || ".mysqli_errno($pnCH)." : ".mysqli_error($pnCH)); #only for debug,
+            }
+            return false;
+        } else {
             return $lnID;
         }
     }
 
-
-    function prepare ($value)
+    public function prepare($value): int|string
     {
-        global $pnCH;
-        $search  = array (
-            chr (92),
+        $pnCH = $this->connect();
+
+        $search = [
+            chr(92),
             "C:/fakepath/",
             " union ",
             " select ",
             " delete ",
             " or ",
-            " exec "
-        );
-        $replace = array (
+            " exec ",
+        ];
+        $replace = [
             '',
             "",
             "",
             "",
             "",
             "",
-            ""
-        );
-        $value   = str_ireplace ($search, $replace, $value);
+            "",
+        ];
+        $value = str_ireplace($search, $replace, $value);
 
         // Якщо змінна не число - то беремо її в кавички, та екрануємо
-        if (!is_numeric ($value)) {
-            $value = "'".mysqli_real_escape_string ($pnCH, $value)."'";
+        if (!is_numeric($value)) {
+            $value = "'".mysqli_real_escape_string($pnCH, $value)."'";
         }
-
 
         return $value;
     }
 
-
-
-
-
-    #	Функція, яка повертає масив з об'єктами записів
-    #   INPUT:
-    #		resource $lnID - Вказівник на результат запиту
-    #	OUTPUT:
-    #       array
-    function getObject ($lnID)
+    /**
+     * Функція, яка повертає масив з об'єктами записів
+     *
+     * @param $lnID  - Вказівник на результат запиту
+     * @return array
+     */
+    public function getObject($lnID): array
     {
-        $array = array ();
-        while ($row = @mysqli_fetch_object ($lnID)) {
+        $array = [];
+        while ($row = @mysqli_fetch_object($lnID)) {
             $array[] = $row;
         }
 
@@ -93,68 +139,54 @@ class DB
     }
 
 
-    #	Функція, яка повертає об'єкт одного запису
-    #   INPUT:
-    #		resource $lnID - Вказівник на результат запиту
-    #	OUTPUT:
-    #       object
-    function getOneObject ($lnID)
+    public function getFieldByID(string $table, string $field, $id)
     {
-        $row = mysqli_fetch_object ($lnID);
+        $lcQry = "select ".$field." from ".$table." where id".$table."=".$id;
+        $lnID = $this->Qry($lcQry);
+        $loData = $this->getOneObject($lnID);
+        return $loData->$field;
+    }
+
+
+    public function setFieldByID(string $table, string $field, $val, $id): bool
+    {
+        $lcQry = "update ".$table." set ".$field."=".$val." where id".$table."=".$id;
+
+        if ($this->Qry($lcQry)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Функція, яка повертає об'єкт одного запису
+     *
+     * @param $lnID  - Вказівник на результат запиту
+     *
+     * @return object|bool|null
+     */
+    private function getOneObject($lnID): object|bool|null
+    {
+        $row = mysqli_fetch_object($lnID);
 
         return $row;
     }
 
 
-
-    #	Функція, яка повертає кількіть записів після виконання запиту
-    #   INPUT:
-    #		resource $lnID - Вказівник на результат запиту
-    #	OUTPUT:
-    #       integer к-ть записів
-    function RowCount ($lnID)
+    /**
+     * Функція, яка повертає кількіть записів після виконання запиту
+     *
+     * @param $lnID  - Вказівник на результат запиту
+     * @return bool|int|string  - к-ть записів
+     */
+    private function RowCount($lnID): bool|int|string
     {
         if ($lnID) {
-            return @mysqli_num_rows ($lnID);
+            return @mysqli_num_rows($lnID);
         } else {
-            return FALSE;
-        }
-
-    }
-
-
-    #	Функція, яка конвертує дату дд.мм.рр в рр-мм-дд
-    #   INPUT:
-    #		$date - дата
-    #	OUTPUT:
-    #       $date - дата Mysql
-    function DateToMysql ($date)
-    {
-        $dateArr = explode (".", $date);
-        $newDate = $dateArr[2]."-".$dateArr[1]."-".$dateArr[0];
-
-        return $newDate;
-    }
-
-
-    function getFieldByID ($table, $field, $id)
-    {
-        $lcQry  = "select ".$field." from ".$table." where id".$table."=".$id;
-        $lnID   = $this->Qry ($lcQry);
-        $loData = $this->getOneObject ($lnID);
-
-        return $loData->$field;
-    }
-
-
-    function setFieldByID ($table, $field, $val, $id)
-    {
-        $lcQry = "update ".$table." set ".$field."=".$val." where id".$table."=".$id;
-
-        if ($this->Qry ($lcQry)) {
-            return TRUE;
-        } else {
-            return FALSE;
+            return false;
         }
     }
 

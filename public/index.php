@@ -11,9 +11,9 @@
 
 try {
     require_once __DIR__.'/../bootstrap.php';
-    require_once PATH_CORE.'routers.php';
+    require_once PATH_ROOT.'routers.php';
 } catch (Throwable $ex) {
-    response()->error($ex->getMessage(), $ex->getCode());
+    response()->error($ex->getMessage(), $ex->getCode(), isDebug() ? $ex->getTrace() : null);
 }
 
 exit();

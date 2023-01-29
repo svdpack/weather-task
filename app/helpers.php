@@ -12,15 +12,31 @@ if (!function_exists('response')) {
 }
 
 
+if (!function_exists('isDebug')) {
+
+    function isDebug(): bool
+    {
+        return defined('APP_DEBUG') && APP_DEBUG;
+    }
+}
+
 if (!function_exists('dd')) {
     function dd(...$args): void
     {
+        if (!isDebug()) {
+            return;
+        }
+
         dump(...$args);
         die();
     }
 }
 
 if (!function_exists('dump')) {
+    if (!isDebug()) {
+        return;
+    }
+
     function dump(...$args): void
     {
         foreach ($args as $arg) {
@@ -40,5 +56,23 @@ if (!function_exists('dump')) {
             echo htmlspecialchars($content);
             echo "</pre>";
         }
+    }
+}
+
+
+if (!function_exists('DateToMysql')) {
+
+    /**
+     * Функція, яка конвертує дату дд.мм.рр в рр-мм-дд
+     *
+     * @param $date  - дата
+     * @return string -  дата Mysql
+     */
+    function DateToMysql($date): string
+    {
+        $dateArr = explode(".", $date);
+        $newDate = $dateArr[2]."-".$dateArr[1]."-".$dateArr[0];
+
+        return $newDate;
     }
 }

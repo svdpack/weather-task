@@ -12,7 +12,7 @@ class HourlyTempModel
 
     function __construct()
     {
-        $this->db = new DB();
+        $this->db = DB::init();
     }
 
     public function getDailyTemp(string $day)
