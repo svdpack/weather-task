@@ -19,7 +19,6 @@ define("DB_PSWD","");
 define("DB_CHARSET","SET NAMES utf8");
 
 
-define("APPLINK","https://api.openweathermap.org/data/2.5/weather?");
 define("APPID","");
 define("CITY","Kyiv");
 define("XTOKEN","");

@@ -12,51 +12,49 @@
 
 namespace App\Services;
 
-use App\Core\DB;
 
-class WeatherService
+class OpenWeatherMapApiService
 {
 
-    function __construct()
+    const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
+
+    public function setHourlyTemp(): ?object
     {
+        $query = http_build_query([
+            'q' => CITY,
+            'units' => 'metric',
+            'lang' => 'uk',
+            'appid' => APPID,
+        ]);
 
-        $this->db = new DB();
+        $url = static::API_URL.'?'.$query;
 
-        return true;
+        $response = $this->curlConnect($url);
+
+        if (false !== $response) {
+            return json_decode($response);
+        }
+
+        return null;
     }
 
 
-    function curlConnect($url)
+    function curlConnect($url): bool|string
     {
-
-
         $ch = curl_init($url);
-
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, 0);
-
         #$arr_geaders[] = "secret-key:tLGDa6ct6pARmcyVwtEE";
         #curl_setopt($ch, CURLOPT_HTTPHEADER, $arr_geaders);
-
 
         $response = curl_exec($ch);
 
         #$status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-
         return $response;
-
-    }
-
-    function setHourlyTemp()
-    {
-        $url = APPLINK.'q='.CITY.'&units=metric&lang=uk&appid='.APPID; # build API URL
-
-        $responce = $this->curlConnect($url);
-
-        return json_decode($responce);
     }
 }

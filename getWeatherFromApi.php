@@ -10,12 +10,12 @@
 */
 
 use App\Models\HourlyTempModel;
-use App\Services\WeatherService;
+use App\Services\OpenWeatherMapApiService;
 
 require_once __DIR__.'/bootstrap.php';
 
 
-$service = new WeatherService();
+$service = new OpenWeatherMapApiService();
 $weather = $service->setHourlyTemp();
 
 if (!empty($weather)
