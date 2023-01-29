@@ -25,8 +25,13 @@ class App
 
     function checkToken()
     {
-        $headers = getallheaders();
-        $x_token = $headers['x-token'];
+        $x_token = null;
+        foreach (getallheaders() as $keyHead => $valHead) {
+            if (strtolower($keyHead) === 'x-token') {
+                $x_token = $valHead;
+                break;
+            }
+        }
 
         if ($x_token !== XTOKEN  ){
             self::error("Wrong token used!");
