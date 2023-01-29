@@ -1,7 +1,7 @@
 <?php
 
 use App\Core\Auth;
-use App\Services\WeatherService;
+use App\Models\HourlyTempModel;
 
 $in_URL = parse_url($_SERVER['REQUEST_URI']) ?? '';
 $route = trim($in_URL['path'] ?? '', '/');
@@ -15,8 +15,8 @@ switch ($route) {
         if (!empty($_GET['day'])) {
             $day = $_GET['day'];
             if (preg_match("/^[0-9]{4}-[0-1][0-2]-[0-3][0-9]$/", $day)) {
-                $Weather = new WeatherService();
-                $temperatures = $Weather->getDailyTemp();
+                $model = new HourlyTempModel();
+                $temperatures = $model->getDailyTemp($day);
 
                 response()->success($temperatures);
             } else {
