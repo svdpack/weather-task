@@ -9,13 +9,10 @@
 ********************************************************************************
 */
 
-require ("classes/appClass.php");
+use App\Core\App;
+use App\Services\WeatherService;
 
-$app = new app(); # Application initialization
+$app = new App();
 
-
-require ("classes/WeatherClass.php");
-
-$Weather = new WeatherClass();
-
+$Weather = new WeatherService();
 $Weather->setHourlyTemp();

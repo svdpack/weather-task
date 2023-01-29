@@ -10,30 +10,27 @@
 */
 
 
-require ("classes/appClass.php");
+use App\Core\App;
+use App\Services\WeatherService;
 
-$app = new app(); # Application initialization
+require_once __DIR__.'/../bootstrap.php';
+
+$app = new App(); # Application initialization
 
 
-require ("classes/WeatherClass.php");
-
-$Weather = new WeatherClass();
-
+$Weather = new WeatherService();
 
 
 if ($_GET['day'] or !empty($_GET['day'])) {
     try {
         $day = $_GET['day'];
-        if (preg_match ("/^[0-9]{4}-[0-1][0-2]-[0-3][0-9]$/", $day)){
-           $Weather->getDailyTemp ();
-        }else{
+        if (preg_match("/^[0-9]{4}-[0-1][0-2]-[0-3][0-9]$/", $day)) {
+            $Weather->getDailyTemp();
+        } else {
             $app->error("Bad format for day parameter! You need to send day in next format 'Y-m-d'");
         }
-
-
     } catch (Exception $ex) {
-
-        $app->error($ex->getMessage ());
+        $app->error($ex->getMessage());
     }
 
 } else {

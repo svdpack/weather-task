@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Core;
+
 /*
 ********************************************************************************
 *   Project:        test-task by PhpStorm
@@ -10,15 +12,10 @@
 ********************************************************************************
 */
 
-class app
+class App
 {
-
-    // constructor
     function __construct ()
     {
-        require ("config/mainConfig.php");
-        require ("classes/DBClass.php");
-
         $this->db = new DB();
 
         self::checkToken();

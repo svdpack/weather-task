@@ -10,7 +10,11 @@
 ********************************************************************************
 */
 
-class WeatherClass
+namespace App\Services;
+
+use App\Core\DB;
+
+class WeatherService
 {
 
     function __construct()
