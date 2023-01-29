@@ -34,13 +34,8 @@ class App
         }
 
         if ($x_token !== XTOKEN  ){
-            self::error("Wrong token used!");
-            die();
+            throw new \Exception('Wrong token used!', 401);
         }
-        else{
-            return TRUE;
-        }
-
     }
 
 

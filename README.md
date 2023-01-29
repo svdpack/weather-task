@@ -1,10 +1,15 @@
-Execute db.sql script
+# Deploy
 
-Set cron job:   
-0 * * * * /path/to/script/getWeatherFromApi.php   
+1. Execute `db.sql` script
 
+2. Set cron job: `0 * * * * /path/to/script/getWeatherFromApi.php`  
 for collect some data from weather api server
 
-Call localhost:port/?day=Y-m-d in browser to get daily temperature array.
+
+# API
+
+Get daily temperature array
+
+Call GET `/api/weather/?day=Y-m-d`
 
 X-token you can find in config file.
