@@ -12,11 +12,19 @@ if (!function_exists('response')) {
 }
 
 
+if (!function_exists('env')) {
+    function env(string $nameEnv, $default = null): mixed
+    {
+        return $_ENV[$nameEnv] ?? $default;
+    }
+}
+
+
 if (!function_exists('isDebug')) {
 
     function isDebug(): bool
     {
-        return defined('APP_DEBUG') && APP_DEBUG;
+        return env('APP_DEBUG', false);
     }
 }
 

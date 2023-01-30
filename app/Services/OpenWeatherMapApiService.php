@@ -22,10 +22,10 @@ class OpenWeatherMapApiService
     public function setHourlyTemp(): ?object
     {
         $query = http_build_query([
-            'q' => CITY,
+            'q' => env('CITY'),
             'units' => 'metric',
             'lang' => 'uk',
-            'appid' => APPID,
+            'appid' => env('APPID'),
         ]);
 
         $url = static::API_URL.'?'.$query;

@@ -24,6 +24,6 @@ class Auth
             }
         }
 
-        return $x_token === XTOKEN;
+        return $x_token === env('XTOKEN');
     }
 }

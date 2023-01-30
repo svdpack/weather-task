@@ -64,8 +64,8 @@ class DB
     private function connect(): mysqli
     {
         if (null === $this->connection) {
-            $this->connection = new mysqli(DB_HOST, DB_USER, DB_PSWD, DB_NAME,);
-            $this->connection->set_charset(DB_CHARSET);
+            $this->connection = new mysqli(env('DB_HOST'), env('DB_USER'), env('DB_PSWD'), env('DB_NAME'));
+            $this->connection->set_charset(env('DB_CHARSET'));
 
             if ($this->connection->connect_error) {
                 throw new Exception($this->connection->connect_error);
