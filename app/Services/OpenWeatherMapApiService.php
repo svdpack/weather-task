@@ -13,48 +13,39 @@
 namespace App\Services;
 
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+
 class OpenWeatherMapApiService
 {
 
     const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 
+    /**
+     * @throws GuzzleException
+     */
     public function setHourlyTemp(): ?object
     {
-        $query = http_build_query([
+        $query = [
             'q' => env('CITY'),
             'units' => 'metric',
             'lang' => 'uk',
             'appid' => env('APPID'),
-        ]);
+        ];
 
-        $url = static::API_URL.'?'.$query;
+        $client = new Client();
+        $response = $client->get(static::API_URL, [
+                'query' => $query,
+            ]
+        );
 
-        $response = $this->curlConnect($url);
+        $responseCode = $response->getStatusCode();
 
-        if (false !== $response) {
-            return json_decode($response);
+        if ($responseCode >= 200 && $responseCode < 300) {
+            return json_decode($response->getBody()->getContents());
         }
 
         return null;
-    }
-
-
-    function curlConnect($url): bool|string
-    {
-        $ch = curl_init($url);
-
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        #$arr_geaders[] = "secret-key:tLGDa6ct6pARmcyVwtEE";
-        #curl_setopt($ch, CURLOPT_HTTPHEADER, $arr_geaders);
-
-        $response = curl_exec($ch);
-
-        #$status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        return $response;
     }
 }
